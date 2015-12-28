@@ -1,3 +1,7 @@
+body {
+    background-color: #fff;
+}
+
 .red {
 	color: #cc362e;
 }
@@ -61,4 +65,8 @@ input[readonly] {
 
 .disabled-color {
     color: #ef233c;
+}
+
+.chart {
+    margin-left: 5px;
 }

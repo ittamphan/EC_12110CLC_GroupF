@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Auth;
 use App\User;
 use Validator;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
@@ -22,7 +24,7 @@ class AuthController extends Controller
     */
 
     use AuthenticatesAndRegistersUsers, ThrottlesLogins;
-    protected $redirectPath = '/';
+    protected $redirectPath = '/'; // Biến được sử dụng để trả về lại trang chủ khi đăng nhập/ đăng ký thành công.
     /**
      * Create a new authentication controller instance.
      *
@@ -41,6 +43,7 @@ class AuthController extends Controller
      */
     protected function validator(array $data)
     {
+        // Kiểm tra các thọng tin dk có hợp lê hay không.
         return Validator::make($data, [
             'name' => 'required|max:255',
             'email' => 'required|email|max:255|unique:users',
@@ -57,6 +60,7 @@ class AuthController extends Controller
      */
     protected function create(array $data)
     {
+        // Tạo user mới và lưu vào trong database
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -66,4 +70,5 @@ class AuthController extends Controller
             'gender' => $data['gender']
         ]);
     }
+
 }

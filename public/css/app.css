@@ -82,3 +82,13 @@
 	right: 65%;
 	top: 45%;
 }
+
+.div-rating {
+	float: left;
+	width: 100%;
+	clear: both;
+}
+
+#feedback {
+	line-height: 190%;
+}

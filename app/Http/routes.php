@@ -371,6 +371,21 @@ Route::group(['middleware' => 'auth'], function() {
 		'uses' => 'OrdersController@updateStatus'
 		]);
 
+	Route::get('/admin/top-users', [
+		'as' => 'admin.topusers',
+		'uses' => 'PagesController@topUsers'
+		]);
+
+	Route::get('/admin/top-brands-and-types', [
+		'as' => 'admin.topbrandsandtypes',
+		'uses' => 'PagesController@topBrandsAndTypes'
+		]);
+
+	Route::get('/admin/top-products', [
+		'as' => 'admin.topproducts',
+		'uses' => 'PagesController@topProducts'
+		]);
+
 	//
 	//Profile edit
 	//
@@ -403,5 +418,36 @@ Route::group(['middleware' => 'auth'], function() {
 		'as' => 'updatePassword',
 		'uses' => 'UsersController@updatePassword'
 		]);
+
+	Route::get('/profile/order-history/{id}', [
+		'as' => 'orderhistory',
+		'uses' => 'UsersController@orderhistory'
+		]);
+
+	Route::get('/profile/comments-history/{id}', [
+		'as' => 'commentshistory',
+		'uses' => 'UsersController@commentshistory'
+		]);
+
+	Route::get('/profile/wishlist/{id}', [
+		'as' => 'wishlist',
+		'uses' => 'UsersController@wishlist'
+		]);
+
+	Route::get('/add-to-wish-list/{id}/{user_id}', [
+		'as' => 'storeWishedProduct',
+		'uses' => 'WishlistsController@storeWishedProduct'
+		]);
+
+	Route::delete('/profile/delete-wishlist-item/{id}', [
+		'as' => 'deleteWishlistItem',
+		'uses' => 'WishlistsController@deleteWishlistItem'
+		]);
 });
 
+Route::post('/send-review', [
+	'as' => 'addfeedback',
+	'uses' => 'FeedbacksController@storeFeedback'
+	]);
+
+Route::post('/rate/{id}/{user_id}', 'ProductsController@rating');

@@ -13,6 +13,9 @@ use App\Http\Controllers\Controller;
 
 class TypesController extends Controller
 {
+    ///////////////////////////////////////////
+    // Hàm hiển thị trang thêm loại sản phẩm //
+    ///////////////////////////////////////////
     public function add()
     {
     	$page = 'partials.admin-addType';
@@ -21,6 +24,9 @@ class TypesController extends Controller
         return view('quantri/admin', compact('page', 'users'));
     }
 
+    ////////////////////////////////////////////////////
+    // Hàm lưu các thông tin của loại mới và database //
+    ////////////////////////////////////////////////////
     public function store(TypeFormRequest $request)
     {
     	$type_name = $request->input('type_name');
@@ -31,6 +37,9 @@ class TypesController extends Controller
     	return redirect()->route('admin.typeManagement');
     }
 
+    ///////////////////////////////////////////
+    // Hàm hiển thị trang Edit loại sản phẩm //
+    ///////////////////////////////////////////
     public function edit($id)
     {
     	$page = 'partials.admin-editType';
@@ -39,7 +48,10 @@ class TypesController extends Controller
 
         return view('quantri/admin', compact('page', 'users', 'type'));
     }
-
+    
+    ////////////////////////////////////////////
+    // Hàm lưu các sửa đổi vào trong database //
+    ////////////////////////////////////////////
     public function update($id, TypeFormRequest $request)
     {
     	$type = Type::find($id);

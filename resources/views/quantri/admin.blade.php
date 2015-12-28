@@ -27,6 +27,7 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+    
   </head>
 
   <body>
@@ -63,12 +64,37 @@
               	  <h5 class="centered">{{ Auth::user()->name }}</h5>
               	  	
                   <li class="mt">
-                      <a class="active" href="{{ route('admin.dashboard') }}">
+                      <a href="{{ route('admin.dashboard') }}">
                           <i class="fa fa-dashboard"></i>
                           <span>Dashboard</span>
                       </a>
                   </li>
-
+                  <li class="sub-menu">
+                      <a href="javascript:;" >
+                          <i class="fa fa-bar-chart-o"></i>
+                          <span>Store's statistics</span>
+                      </a>
+                      <ul class="sub">
+                          <li>
+                          <a href="{{ route('admin.topusers') }}">
+                            <i class="fa fa-users"></i>
+                              <span>Top 3 users</span>
+                          </a>
+                          </li>
+                          <li>
+                          <a href="{{ route('admin.topproducts') }}">
+                            <i class="fa fa-cube"></i>
+                              <span>Top products</span>
+                          </a>
+                          </li>
+                          <li>
+                          <a href="{{ route('admin.topbrandsandtypes') }}">
+                            <i class="fa fa-cubes"></i>
+                              <span>Top types and brands</span>
+                          </a>
+                          </li>
+                      </ul>
+                  </li>
                   <li class="sub-menu">
                       <a href="#" >
                           <i class="fa fa-user"></i>

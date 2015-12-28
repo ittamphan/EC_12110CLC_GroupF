@@ -47,9 +47,9 @@
         	<a href="{{ route('homepage') }}"><img src="{{ asset('public/images/logo.png') }}" alt=""></a>
         </div>
         <div class="col-md-8 col-xs-12" style="margin: 0px;padding: 0px;">
-            <div class="col-md-4 col-xs-4 well"><i class="fa fa-heart fa-lg"></i> 16</div>
-            <div class="col-md-4 col-xs-4 well"><i class="fa fa-clock-o fa-lg"></i> History</div>
-            <div class="col-md-4 col-xs-4 well"><i class="fa fa-thumbs-o-up fa-lg"></i> 26</div>
+            <a href="{{ route('wishlist', Auth::user()->id) }}" class="profile-link"><div class="col-md-4 col-xs-4 well"><i class="fa fa-heart fa-lg"></i> Wishlist</div></a>
+            <a href="{{ route('orderhistory', Auth::user()->id) }}" class="profile-link"><div class="col-md-4 col-xs-4 well"><i class="fa fa-clock-o fa-lg"></i> Order History</div></a>
+            <a href="{{ route('commentshistory', Auth::user()->id) }}" class="profile-link"><div class="col-md-4 col-xs-4 well"><i class="fa fa-comments fa-lg"></i> Comments</div></a>
         </div>
     </div>
     <div id="edit-avatar">

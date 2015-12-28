@@ -57,12 +57,11 @@ License URL: http://creativecommons.org/licenses/by/3.0/
       				</div>
       			<div class="company_address">
 				     	<h3>Company Information :</h3>
-						    	<p>500 Lorem Ipsum Dolor Sit,</p>
-						   		<p>22-56-2-9 Sit Amet, Lorem,</p>
-						   		<p>USA</p>
-				   		<p>Phone:(00) 222 666 444</p>
-				   		<p>Fax: (000) 000 00 00 0</p>
-				 	 	<p>Email: <span>info@mycompany.com</span></p>
+						    	<p>01 đường Võ Văn Ngân</p>
+						   		<p>Quận Thủ Đức</p>
+						   		<p>TP Hồ Chí Minh</p>
+				   		<p>Phone:(01) 238 014 905</p>
+				 	 	<p>Email: <span>homeshoppe@gmail.com</span></p>
 				   		<p>Follow on: <span>Facebook</span>, <span>Twitter</span></p>
 				   </div>
 				 </div>

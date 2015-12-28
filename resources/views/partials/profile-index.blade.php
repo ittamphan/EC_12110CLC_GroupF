@@ -1,6 +1,5 @@
 <div class="edit-profile-form">
 	<form action="" method="POST" role="form" enctype="multipart/form-data">
-	<a href="{{ route('homepage') }}"><i class="fa fa-arrow-left"></i>   Back to homapage!</a>
 	<br>
 	<br>
 	<legend>User information</legend>

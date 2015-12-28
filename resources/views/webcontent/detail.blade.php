@@ -18,7 +18,9 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 {!! Html::style('public/css/easy-responsive-tabs.css') !!}
 {!! Html::style('public/css/global.css') !!}
 {!! Html::script('public/js/slides.min.jquery.js') !!}
+<link rel="stylesheet" type="text/css" href="{{ asset('public/css/rating.css') }}">
 <link rel="stylesheet" href="{{ asset('public/css/app.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('public/assets-admin/font-awesome/css/font-awesome.css') }}">
 <script>
 		$(function(){
 			$('#products').slides({
@@ -97,14 +99,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 						</div>
 					@endif
 				<div class="share-desc">
-					<div class="share">
-						<p>Share Product :</p>
-						<ul>
-					    	<li><a href="#">{!! Html::image('public/images/facebook.png') !!}</a></li>
-					    	<li><a href="#">{!! Html::image('public/images/twitter.png') !!}</a></li>					    
-			    		</ul>
-					</div>
-					@if($product->quantity <= 5)
+					@if($product->quantity <= 5 || $product->is_disabled == 1)
 					<button class="button" disabled="true"><span>Add to Cart</span></button>
 					@else
 					<div class="button">
@@ -114,7 +109,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 					<div class="clear"></div>
 					<br>
 					<!-- Checkout using paypal -->
-					@if($product->quantity > 5)
+					@if($product->quantity > 5 && $product->is_disabled == 0)
 					<div class="paypal">
 						<strong>Using Paypal</strong>
 					<form target="paypal" action="https://www.paypal.com/cgi-bin/webscr" method="post">
@@ -139,7 +134,11 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 				</div>
 				<div class="wish-list">
 				 	<ul>
-				 		<li class="wish"><a href="#">Add to Wishlist</a></li>
+				 	@if(Auth::check())
+				 		<li class="wish"><a href="{{ route('storeWishedProduct', [$product->id, Auth::user()->id]) }}">Add to Wishlist</a></li>
+				 	@else
+				 		<li class="wish"><a href="{{ route('login') }}">Login to add to Wishlist!</a></li>
+				 	@endif
 				 	</ul>
 				 </div>
 			</div>
@@ -161,29 +160,114 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 				 <div class="product-tags">
 						 <p>{{ $product->product_info }}</p>
 			    </div>	
-
+				
 				<div class="review">
-					<h4>Lorem ipsum Review by <a href="#">Finibus Bonorum</a></h4>
-					 <ul>
-					 	<li>Price :<a href="#">{!! Html::image('public/images/price-rating.png') !!}</a></li>
-					 	<li>Value :<a href="#">{!! Html::image('public/images/value-rating.png') !!}</a></li>
-					 	<li>Quality :<a href="#">{!! Html::image('public/images/quality-rating.png') !!}</a></li>
-					 </ul>
-					 <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</p>
+					@if(count($feedbacks))
+					@foreach($feedbacks as $feedback)
+					<div class="row">
+					<h4>Reviewed by <a style="cursor: pointer">{{ $feedback->nickname }}</a></h4>
+					 <h3>{{ $feedback->heading }}</h3>
+					 <p>{{ $feedback->content }}</p>
+					 <br><br><hr>
+					</div>
+					@endforeach
+					@endif
 				  <div class="your-review">
-				  	 <h3>How Do You Rate This Product?</h3>
+					  <h3>Rate us here, please!</h3>
+					  	 <div class="row div-rating">
+					  	 @if(Auth::check())
+					  	 <?php $user_id = Auth::user()->id ?>
+					  	 @else
+						<?php $user_id = 0 ?>
+					  	 @endif
+				  			<script>
+			                    $(document).ready(function () {
+			                        $("#star-rating .stars").click(function () {
+
+			                        	$.post('/electronicstore/rate/' + '{{ $product->id }}' + '/' + '{{ $user_id }}' ,{rate:$(this).val()},function(d){
+			                        		console.log(d);
+		                                    if(d>0)
+		                                    {
+		                                        alert('You already rated');
+		                                    }else{
+		                                        alert('Thanks For Rating');
+		                                    }
+		                                });
+			                            var label = $("label[for='" + $(this).attr('id') + "']");
+			                            
+			                            $("#feedback").text(label.attr('title'));
+			                            $(this).attr("checked");
+
+			                        });
+			                    });
+			                </script>
+			                <fieldset id='star-rating' class="rating">
+			                    <input class="stars" type="radio" id="star5" name="rating" value="5" />
+		                        <label class = "full" for="star5" title="Awesome - 5 stars"></label>
+		                        <input class="stars" type="radio" id="star4" name="rating" value="4" />
+		                        <label class = "full" for="star4" title="Pretty good - 4 stars"></label>
+		                        <input class="stars" type="radio" id="star3" name="rating" value="3" />
+		                        <label class = "full" for="star3" title="Meh - 3 stars"></label>
+		                        <input class="stars" type="radio" id="star2" name="rating" value="2" />
+		                        <label class = "full" for="star2" title="Kinda bad - 2 stars"></label>
+		                        <input class="stars" type="radio" id="star1" name="rating" value="1" />
+		                        <label class = "full" for="star1" title="Sucks big time - 1 star"></label>
+			                </fieldset>
+			                <div id='feedback'></div>
+					 	 </div><!-- Rating Ends -->
+					 	 <br>
+					 	 <br>
+					 	 <br>
+					 	 <hr>
+					 	 Total rate for {{ $product->product_name }}
+					 	 <br>
+					 	 <br>
+					 	 <span>
+						 	 <?php
+						 	 for($i = 1; $i <= round($rate_stars); $i++)
+						 	 {
+						 	 ?>
+						 	 	<i class="fa fa-star fa-star-color fa-2x"></i>
+						 	 <?php
+						 	 }
+						 	 if($rate_stars < 5)
+						 	 {
+						 	 	for($j=1; $j <= (5-round($rate_stars)); $j++)
+						 	 	{
+							 	 	?>
+							 	 	<i class="fa fa-star-o fa-star-color fa-2x"></i>
+							 	 	<?php
+						 	 	}
+						 	 }
+						 	 ?>
+					 	 </span>
+					 	 <hr>
+				  	 <h3>How Do You Feel About This {{ $product->product_name }}?</h3>
 				  	  <p>Write Your Own Review?</p>
-				  	  <form>
+				  	  <form action="{{ route('addfeedback') }}" method="POST" role="form">
+				  	  @if(count($errors))
+				  	  <div class="alert alert-warning">
+				  	  	<strong>Uh Oh!</strong>
+				  	  	<ul>
+				  	  		@foreach($errors->all() as $error)
+				  	  		<li>{{ $error }}</li>
+				  	  		@endforeach
+				  	  	</ul>
+				  	  </div>
+				  	  @endif
+				  	  <input type="hidden" name="_token" value="{{ csrf_token() }}">
+				  	  <input type="hidden" name="product_id" value="{{ $product->id }}">
+				  	  <input type="hidden" name="user_id" value="@if(Auth::guest()){{'0'}}@else{{ Auth::user()->id }}@endif">
 					    	<div>
 						    	<span><label>Nickname<span class="red">*</span></label></span>
-						    	<span><input type="text" value=""></span>
+						    	<span><input type="text" name="nickname" value=""></span>
 						    </div>
 						    <div><span><label>Summary of Your Review<span class="red">*</span></label></span>
-						    	<span><input type="text" value=""></span>
+						    	<span><input type="text" name="heading" value=""></span>
 						    </div>						
 						    <div>
 						    	<span><label>Review<span class="red">*</span></label></span>
-						    	<span><textarea> </textarea></span>
+						    	<span><textarea name="content"> </textarea></span>
 						    </div>
 						   <div>
 						   		<span><input type="submit" value="SUBMIT REVIEW"></span>

@@ -13,7 +13,10 @@ return [
     |
     */
 
-    'failed' => 'Your email or password is incorrect. Try again.',
+    'failed' => ['Your email or password is incorrect. Please try again!', 
+                 'Or your account might be disabled by our Administrator.',
+                 'Please contact our Administrator for more information.'
+                ],
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
 
 ];

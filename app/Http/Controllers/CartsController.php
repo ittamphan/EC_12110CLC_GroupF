@@ -108,6 +108,11 @@ class CartsController extends Controller
                     'quantity' => $item->qty,
                     'price' => $item->price
                     ]);
+
+                $update_quantity = Product::find($item->id);
+                $update_quantity->update([
+                    'quantity' => $update_quantity->quantity-$item->qty
+                    ]);
             }
         }
         Cart::destroy();

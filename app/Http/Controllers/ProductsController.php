@@ -8,6 +8,8 @@ use App\User;
 use App\Type;
 use App\Brand;
 use App\Product;
+use App\Feedback;
+use App\Rate;
 use App\Order;
 use App\OrderDetail;
 use App\Http\Requests;
@@ -19,21 +21,27 @@ use Input;
 
 class ProductsController extends Controller
 {
+    /////////////////////////////////////////////////
+    // Hiển thị tất cả các sản phẩm trong hệ thống //
+    /////////////////////////////////////////////////
     public function showproducts()
     {
-        $number_of_items = Cart::content();
-        $brands_mobile = Brand::where('brand_type', 'LIKE', '%phone%')->get();
-        $brands_desktop = Brand::where('brand_type', 'LIKE', '%desktop%')->get();
-        $brands_laptop = Brand::where('brand_type', 'LIKE', '%laptop%')->get();
-        $brands_camera = Brand::where('brand_type', 'LIKE', '%camera%')->get();
-        $brands_tv = Brand::where('brand_type', 'LIKE', '%tv%')->get();
- 		$products = Product::paginate(12);
+        $number_of_items = Cart::content(); // Lấy các sản phẩm có trong cart
+        $brands_mobile = Brand::where('brand_type', 'LIKE', '%phone%')->get(); // Lấy loại có tên là PHONE
+        $brands_desktop = Brand::where('brand_type', 'LIKE', '%desktop%')->get(); // Tương tự trên
+        $brands_laptop = Brand::where('brand_type', 'LIKE', '%laptop%')->get(); // Tương tự trên
+        $brands_camera = Brand::where('brand_type', 'LIKE', '%camera%')->get(); // Tương tự trên
+        $brands_tv = Brand::where('brand_type', 'LIKE', '%tv%')->get(); // Tương tự trên
+ 		$products = Product::paginate(12); // Phân trang, 12 sản phẩm một trang
  		$products->setPath('products');
 
  		return view('webcontent/products', compact('products', 'brands_mobile', 'brands_desktop',
          'brands_laptop', 'brands_camera', 'brands_tv', 'number_of_items', 'number_of_items'));
     }
 
+    /////////////////////////////
+    // Xem sản phẩm theo loại. //
+    /////////////////////////////
     public function showProductsInType($id)
     {
         $number_of_items = Cart::content();
@@ -49,6 +57,9 @@ class ProductsController extends Controller
          'brands_laptop', 'brands_camera', 'brands_tv', 'number_of_items'));
     }
 
+    ////////////////////////////
+    // Xem sản phẩm theo hãng //
+    ////////////////////////////
     public function showProductsInBrand($type_id, $id)
     {   
         $number_of_items = Cart::content();
@@ -67,14 +78,20 @@ class ProductsController extends Controller
          'brands_laptop', 'brands_camera', 'brands_tv', 'number_of_items'));
     }
 
+    ///////////////////////////
+    // Xem chi tiết sản phẩm //
+    ///////////////////////////
     public function detail($id)
     {
         $number_of_items = Cart::content();
-    	$product = Product::find($id);
-    	$type = Type::all();	
+    	$product = Product::find($id); // Tìm sản phẩm có ID như trên trong database để lấy dữ liệu
+    	$type = Type::all(); // Lấy tất cả các loại sp
+        $users = User::all(); // Lấy tất cả các người dùng
+        $feedbacks = Feedback::where('product_id', '=', $id)->get(); // Hiển thị những Feedback có id Sản phẩm như trên
+        $rate_stars = DB::table('rates')->where('product_id', '=', $id)->avg('rate'); // Tính trung bình đánh giá của sp đó
     	$related_product = Product::where('type_id', '=', $product->type_id)
-                                    ->orderByRaw('RAND()')->take(4)->get();
-        if($product->sale_price != 0)
+                                    ->orderByRaw('RAND()')->take(4)->get(); // Hiển thị những sản phẩm liên quan, cùng loại
+        if($product->sale_price != 0) // Lấy giá trị của Giá giảm giá nếu có
         {
             $price = $product->sale_price;
         }
@@ -83,9 +100,12 @@ class ProductsController extends Controller
             $price = $product->price;
         }
 
-    	return view('webcontent/detail', compact('product', 'price','type', 'related_product', 'number_of_items'));
+    	return view('webcontent/detail', compact('product', 'price','type', 'related_product', 'number_of_items', 'feedbacks', 'users', 'rate_stars'));
     }
 
+    ///////////////////////////
+    // Hàm tìm kiếm sản phẩm //
+    ///////////////////////////
     public function search()
     {
         $number_of_items = Cart::content();
@@ -95,14 +115,18 @@ class ProductsController extends Controller
         $brands_camera = Brand::where('brand_type', 'LIKE', '%camera%')->get();
         $brands_tv = Brand::where('brand_type', 'LIKE', '%tv%')->get();
         //Search
-        $keyword = Input::get('keyword');
-        $products = Product::where('product_name', 'LIKE', '%'.$keyword.'%')->paginate();
+        $keyword = Input::get('keyword'); // Nhận keyword về
+        $products = Product::where('product_name', 'LIKE', '%'.$keyword.'%')->paginate(); // Lấy những sản phẩm có tên như keyword
+        $products->setPath('');
 
-        return view('webcontent/products', compact('products', 'brands_mobile', 'brands_desktop',
-         'brands_laptop', 'brands_camera', 'brands_tv', 'number_of_items'));
+        return view('webcontent/search', compact('products', 'brands_mobile', 'brands_desktop',
+         'brands_laptop', 'brands_camera', 'brands_tv', 'number_of_items', 'keyword'));
 
     }
 
+    //////////////////////////////////////
+    // Hàm hiển thị trang thêm sản phẩm //
+    //////////////////////////////////////
     public function addProduct()
     {
         $page = 'partials.admin-addProduct';
@@ -113,6 +137,9 @@ class ProductsController extends Controller
         return view('quantri/admin', compact('page', 'users', 'brands', 'types'));
     }
 
+    ///////////////////////////////////////////////////////////////
+    // Hàm lưu các thông tin của sản phẩm mới vào trong database //
+    ///////////////////////////////////////////////////////////////
     public function storeProduct(ProductFormRequest $request)
     {
         // $product_name = Input::get('product_name'); //Hoặc có thể sử dụng cú pháp này
@@ -159,6 +186,9 @@ class ProductsController extends Controller
         return redirect()->route('admin.productManagement');
     }
 
+    /////////////////////////////////////////////////
+    // Hàm update các thông tin vào trong database //
+    /////////////////////////////////////////////////
     public function updateProduct($id, ProductFormRequest $request)
     {
         $product = Product::find($id);
@@ -205,6 +235,9 @@ class ProductsController extends Controller
         return redirect()->route('admin.productManagement');
     }
 
+    /////////////////////////////////////////////////////////////////////////
+    // Hàm xóa sản phẩm (Dành cho test - Hệ thống không được xóa sản phẩm) //
+    /////////////////////////////////////////////////////////////////////////
     public function deleteProduct($id)
     {
         $product = Product::find($id);
@@ -213,6 +246,9 @@ class ProductsController extends Controller
         return redirect()->route('admin.productManagement');
     }
 
+    ///////////////////////////////////////////////
+    // Hàm chỉnh sản phẩm thành sản phẩm NỘI BẬT //
+    ///////////////////////////////////////////////
     public function is_feature($id)
     {
         $product = Product::find($id);
@@ -229,6 +265,9 @@ class ProductsController extends Controller
         return redirect()->route('admin.productManagement');
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////
+    // Hàm ngưng hoạt động sản phẩm (Chỉ khi sản phẩm trong hóa đơn đươc thanh toán) //
+    ///////////////////////////////////////////////////////////////////////////////////
     public function is_disabled($id)
     {
         $product = Product::find($id);
@@ -272,5 +311,19 @@ class ProductsController extends Controller
             
             return redirect()->route('admin.productManagement');
         }
+    }
+
+
+    ///////////////////////////////////////////////
+    // Hàm đánh giá sản phẩm (giá trị từ 1 -> 5) //
+    ///////////////////////////////////////////////
+    public function rating($id, $user_id)
+    {
+        $rate = Input::get('rate');
+        Rate::create([
+            'user_id' => $user_id,
+            'product_id' => $id,
+            'rate' => $rate
+            ]);
     }
 }
